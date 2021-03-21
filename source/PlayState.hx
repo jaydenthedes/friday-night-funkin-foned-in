@@ -1762,7 +1762,7 @@ class PlayState extends MusicBeatState
 	
 			var daRating:String = "sick";
 				
-			if (noteDiff > Conductor.safeZoneOffset * 2)
+			if (noteDiff > Conductor.safeZoneOffset * 1.4)
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
@@ -1771,21 +1771,18 @@ class PlayState extends MusicBeatState
 						{
 							score = -3000;
 							combo = 0;
-							misses++;
-							health -= 0.2;
+							noteMiss(0);
 						}
 					shits++;
 				}
-				else if (noteDiff < Conductor.safeZoneOffset * -2)
+				else if (noteDiff < Conductor.safeZoneOffset * -1.4)
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
 					if (theFunne)
 					{
 						score = -3000;
-						combo = 0;
-						misses++;
-						health -= 0.2;
+						noteMiss(0);
 					}
 					ss = false;
 					shits++;
@@ -1797,7 +1794,7 @@ class PlayState extends MusicBeatState
 					if (theFunne)
 					{
 						score = -1000;
-						health -= 0.03;
+						noteMiss(0);
 					}
 					else
 						score = 100;
@@ -1811,14 +1808,14 @@ class PlayState extends MusicBeatState
 					if (theFunne)
 						{
 							score = -1000;
-							health -= 0.03;
+							noteMiss(0);
 						}
 						else
 							score = 100;
 					ss = false;
 					bads++;
 				}
-				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
+				else if (noteDiff < Conductor.safeZoneOffset * -0.35)
 				{
 					daRating = 'good';
 					totalNotesHit += 0.65;
@@ -1832,10 +1829,10 @@ class PlayState extends MusicBeatState
 					ss = false;
 					goods++;
 				}
-				else if (noteDiff > Conductor.safeZoneOffset * 0.25)
+				else if (noteDiff > Conductor.safeZoneOffset * 0.35)
 				{
 					daRating = 'good';
-					totalNotesHit += 0.65;
+					totalNotesHit += 0.85;
 					if (theFunne)
 						{
 							score = 200;
@@ -1846,14 +1843,43 @@ class PlayState extends MusicBeatState
 					ss = false;
 					goods++;
 				}
-			if (daRating == 'sick')
-			{
-				totalNotesHit += 1;
-				if (health < 2)
-					health += 0.1;
-				sicks++;
-			}
-	
+				else if (noteDiff > Conductor.safeZoneOffset * 0.30)
+				{
+					daRating = 'sick';
+					totalNotesHit += 1;
+					if (health < 2 && scoreTxt.color != FlxColor.RED)
+						health += 0.1;
+					sicks++;
+				}
+				else if (noteDiff < Conductor.safeZoneOffset * -0.30)
+				{
+					daRating = 'sick';
+					totalNotesHit += 1;
+					if (health < 2 && scoreTxt.color != FlxColor.RED)
+						health += 0.04;
+					sicks++;
+				}
+				else if (noteDiff > Conductor.safeZoneOffset * 0.25)
+				{
+					daRating = 'crazy';
+					totalNotesHit += 1;
+					if (health < 2 && scoreTxt.color != FlxColor.RED)
+						health += 0.06;
+					sicks++;
+					score = 400;
+				}
+				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
+					{
+						daRating = 'crazy';
+						totalNotesHit += 1;
+						if (health < 2 && scoreTxt.color != FlxColor.RED)
+							health += 0.06;
+						sicks++;
+						score = 400;
+					}
+
+			trace('hit ' + daRating);
+
 			if (daRating != 'shit' || daRating != 'bad')
 				{
 	
@@ -2410,6 +2436,7 @@ class PlayState extends MusicBeatState
 					{
 						playerStrums.members[note.noteData].animation.play('static');
 						trace('mash ' + mashing);
+						scoreTxt.color = FlxColor.RED;
 					}
 
 					if (mashing != 0)
@@ -2425,7 +2452,11 @@ class PlayState extends MusicBeatState
 			{
 
 				if (resetMashViolation)
+				{
 					mashViolations--;
+					if (mashViolations == 0)
+						scoreTxt.color = FlxColor.WHITE;
+				}
 
 				if (!note.wasGoodHit)
 				{
