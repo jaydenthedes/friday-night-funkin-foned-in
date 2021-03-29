@@ -33,6 +33,7 @@ class DialogueBox extends FlxSpriteGroup
 
 	var handSelect:FlxSprite;
 	var bgFade:FlxSprite;
+	var pressedSomething:Bool;
 
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
@@ -177,7 +178,17 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+		pressedSomething = false;
+
+		for (touch in FlxG.touches.list)
+			{
+				if (touch.justPressed)
+				{
+					pressedSomething = true;
+				}
+			}
+
+		if ((FlxG.keys.justPressed.ANY || pressedSomething) && dialogueStarted == true)
 		{
 			remove(dialogue);
 				

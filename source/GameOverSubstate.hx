@@ -13,6 +13,9 @@ class GameOverSubstate extends MusicBeatSubstate
 	var camFollow:FlxObject;
 
 	var stageSuffix:String = "";
+	var accept:Bool;
+	var back:Bool;
+	var resizeFactor:Int = 2;
 
 	public function new(x:Float, y:Float)
 	{
@@ -35,6 +38,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, daBf);
+		bf.setGraphicSize(Std.int(bf.width * resizeFactor));
 		add(bf);
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
@@ -54,13 +58,28 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		
+		accept = false;
+		back = false;
 
-		if (controls.ACCEPT)
+
+		for (swipe in FlxG.swipes)
+			{
+				if(swipe.distance >= 25){
+					if(swipe.angle > -135 && swipe.angle < -45){
+						back = true;
+					}
+				}
+				else
+					accept = true;
+			}
+
+		if (controls.ACCEPT || accept)
 		{
 			endBullshit();
 		}
 
-		if (controls.BACK)
+		if (controls.BACK || back)
 		{
 			FlxG.sound.music.stop();
 

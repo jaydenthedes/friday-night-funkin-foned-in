@@ -1,6 +1,5 @@
 package;
 
-import Controls.KeyboardScheme;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -13,10 +12,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
-
-#if desktop
-import Discord.DiscordClient;
-#end
 
 using StringTools;
 
@@ -36,19 +31,19 @@ class MainMenuState extends MusicBeatState
 	var newGaming2:FlxText;
 	var newInput:Bool = true;
 
-	public static var kadeEngineVer:String = "1.3.1";
+	public static var kadeEngineVer:String = "1.1.3";
 	public static var gameVer:String = "0.2.7.1";
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var scrollUp:Bool;
+	var scrollDown:Bool;
+	var accept:Bool;
+	var back:Bool;
+
 	override function create()
 	{
-		#if desktop
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
-		#end
-
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -109,11 +104,6 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 
-		if (FlxG.save.data.dfjk)
-			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		else
-			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
-
 		changeItem();
 
 		super.create();
@@ -130,24 +120,47 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			if (controls.UP_P)
+			scrollUp = false;
+			scrollDown = false;
+			accept = false;
+			back = false;
+
+			// The angle in degrees, between -180 and 180. 0 degrees points straight up.
+			for (swipe in FlxG.swipes)
+				{
+					if(swipe.distance >= 25){
+						if(swipe.angle >= -45 && swipe.angle <= 45)
+							scrollDown = true;
+
+						if(swipe.angle > -135 && swipe.angle < -45){
+							back = true;
+						}
+
+						if((swipe.angle >= -180 && swipe.angle <= -135) || (swipe.angle >= 135 && swipe.angle <= 180))
+							scrollUp = true;
+					}
+					else
+						accept = true;
+				}
+
+			if (controls.UP_P || scrollUp)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (controls.DOWN_P)
+			if (controls.DOWN_P || scrollDown)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
 
-			if (controls.BACK)
+			if (controls.BACK || back)
 			{
 				FlxG.switchState(new TitleState());
 			}
 
-			if (controls.ACCEPT)
+			if (controls.ACCEPT || accept)
 			{
 				if (optionShit[curSelected] == 'donate')
 				{

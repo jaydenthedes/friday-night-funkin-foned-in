@@ -24,11 +24,6 @@ import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
 
-#if desktop
-import Discord.DiscordClient;
-import sys.thread.Thread;
-#end
-
 using StringTools;
 
 class TitleState extends MusicBeatState
@@ -56,12 +51,7 @@ class TitleState extends MusicBeatState
 			sys.FileSystem.createDirectory(Sys.getCwd() + "\\assets\\replays");
 		#end
 
-		
 		PlayerSettings.init();
-
-		#if desktop
-		DiscordClient.initialize();
-		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -77,8 +67,6 @@ class TitleState extends MusicBeatState
 		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		KadeEngineData.initSave();
 
 		Highscore.load();
 
@@ -96,16 +84,16 @@ class TitleState extends MusicBeatState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
-		#else
-		new FlxTimer().start(1, function(tmr:FlxTimer)
-		{
+		//#if FREEPLAY
+		//FlxG.switchState(new FreeplayState());
+		//#elseif CHARTING
+		//FlxG.switchState(new ChartingState());
+		//#else
+		//new FlxTimer().start(1, function(tmr:FlxTimer)
+		//{
 			startIntro();
-		});
-		#end
+		//});
+		//#end
 	}
 
 	var logoBl:FlxSprite;
@@ -250,16 +238,6 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
-
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
@@ -272,6 +250,14 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
+
+		for (touch in FlxG.touches.list)
+			{
+				if (touch.justPressed)
+				{
+					pressedEnter = true;
+				}
+			}
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
@@ -291,35 +277,41 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
-			{
+			FlxG.switchState(new MainMenuState());
+
+			//new FlxTimer().start(2, function(tmr:FlxTimer)
+			//{
 
 				// Get current version of Kade Engine
 
-				var http = new haxe.Http("https://raw.githubusercontent.com/KadeDev/Kade-Engine/master/version.downloadMe");
+				//var http = new haxe.Http("https://raw.githubusercontent.com/KadeDev/Kade-Engine/master/version.downloadMe");
 
-				http.onData = function (data:String) {
+				//http.onData = function (data:String) {
 				  
-				  	if (!MainMenuState.kadeEngineVer.contains(data.trim()) && !OutdatedSubState.leftState)
-					{
-						trace('outdated lmao! ' + data.trim() + ' != ' + MainMenuState.kadeEngineVer);
-						OutdatedSubState.needVer = data;
-						FlxG.switchState(new OutdatedSubState());
-					}
-					else
-					{
-						FlxG.switchState(new MainMenuState());
-					}
-				}
-				
-				http.onError = function (error) {
-				  trace('error: $error');
-				  FlxG.switchState(new MainMenuState()); // fail but we go anyway
-				}
-				
-				http.request();
+	
 
-			});
+					// Skip update check
+
+				  	//if (!MainMenuState.kadeEngineVer.contains(data.trim()) && !OutdatedSubState.leftState)
+					//{
+					//	trace('outdated lmao! ' + data.trim() + ' != ' + MainMenuState.kadeEngineVer);
+					//	OutdatedSubState.needVer = data;
+					//	FlxG.switchState(new OutdatedSubState());
+					//}
+					//else
+					//{
+					//	FlxG.switchState(new MainMenuState());
+					//}
+				//}
+				
+				//http.onError = function (error) {
+				//  trace('error: $error');
+				//  FlxG.switchState(new MainMenuState()); // fail but we go anyway
+				//}
+				
+				//http.request();
+
+			//});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 

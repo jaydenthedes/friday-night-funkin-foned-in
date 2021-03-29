@@ -13,6 +13,11 @@ class OutdatedSubState extends MusicBeatState
 
 	public static var needVer:String = "IDFK LOL";
 
+	var grpOptionsTexts:FlxTypedGroup<FlxText>;
+
+	var accept:Bool;
+	var back:Bool;
+
 	override function create()
 	{
 		super.create();
@@ -31,11 +36,26 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT)
+		accept = false;
+		back = false;
+
+		// The angle in degrees, between -180 and 180. 0 degrees points straight up.
+		for (swipe in FlxG.swipes)
+		{
+			if(swipe.distance >= 25){
+				if(swipe.angle > -135 && swipe.angle < -45){
+					back = true;
+				}
+			}
+			else
+				accept = true;
+		}
+
+		if (controls.ACCEPT || accept)
 		{
 			FlxG.openURL("https://github.com/KadeDev/Kade-Engine/releases/latest");
 		}
-		if (controls.BACK)
+		if (controls.BACK || back)
 		{
 			leftState = true;
 			FlxG.switchState(new MainMenuState());

@@ -10,6 +10,8 @@ class GitarooPause extends MusicBeatState
 	var cancelButton:FlxSprite;
 
 	var replaySelect:Bool = false;
+	var scrollRight:Bool;
+	var accept:Bool;
 
 	public function new():Void
 	{
@@ -52,10 +54,24 @@ class GitarooPause extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.LEFT_P || controls.RIGHT_P)
+		scrollRight = false;
+		accept = false;
+
+		for (swipe in FlxG.swipes)
+			{
+				if(swipe.distance >= 25){
+					if(swipe.angle > 45 && swipe.angle < 135){
+						scrollRight = true;
+					}
+				}
+				else
+					accept = true;
+			}
+
+		if (controls.LEFT_P || controls.RIGHT_P || scrollRight)
 			changeThing();
 
-		if (controls.ACCEPT)
+		if (controls.ACCEPT || accept)
 		{
 			if (replaySelect)
 			{

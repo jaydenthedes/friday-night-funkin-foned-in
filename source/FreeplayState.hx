@@ -10,11 +10,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
-
-#if desktop
-import Discord.DiscordClient;
-#end
-
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -29,6 +24,16 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+
+	var upP:Bool;
+	var downP:Bool;
+	var accepted:Bool;
+
+	var scrollUp:Bool;
+	var scrollDown:Bool;
+	var scrollRight:Bool;
+	var accept:Bool;
+	var back:Bool;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -51,11 +56,6 @@ class FreeplayState extends MusicBeatState
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 		 */
-
-		 #if desktop
-		 // Updating Discord Rich Presence
-		 DiscordClient.changePresence("In the Menus", null);
-		 #end
 
 		var isDebug:Bool = false;
 
@@ -185,30 +185,58 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		upP = controls.UP_P;
+		downP = controls.DOWN_P;
+		accepted = controls.ACCEPT;
 
-		if (upP)
+		scrollUp = false;
+		scrollDown = false;
+		scrollRight = false;
+		accept = false;
+		back = false;
+
+		// The angle in degrees, between -180 and 180. 0 degrees points straight up.
+		for (swipe in FlxG.swipes)
+		{
+			if(swipe.distance >= 25){
+				if(swipe.angle >= -45 && swipe.angle <= 45)
+					scrollDown = true;
+
+				if(swipe.angle > -135 && swipe.angle < -45){
+					back = true;
+				}
+
+				if(swipe.angle > 45 && swipe.angle < 135){
+					scrollRight = true;
+				}
+
+				if((swipe.angle >= -180 && swipe.angle <= -135) || (swipe.angle >= 135 && swipe.angle <= 180))
+					scrollUp = true;
+			}
+			else
+				accept = true;
+		}
+
+		if (upP || scrollUp)
 		{
 			changeSelection(-1);
 		}
-		if (downP)
+		if (downP || scrollDown)
 		{
 			changeSelection(1);
 		}
 
 		if (controls.LEFT_P)
 			changeDiff(-1);
-		if (controls.RIGHT_P)
+		if (controls.RIGHT_P || scrollRight)
 			changeDiff(1);
 
-		if (controls.BACK)
+		if (controls.BACK || back)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
 
-		if (accepted)
+		if (accepted || accept)
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 

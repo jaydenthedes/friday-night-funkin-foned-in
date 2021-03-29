@@ -20,7 +20,16 @@ class PauseSubState extends MusicBeatSubstate
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
 
+	var upP:Bool;
+	var downP:Bool;
+	var accepted:Bool;
+
 	var pauseMusic:FlxSound;
+	var scrollUp:Bool;
+	var scrollDown:Bool;
+	var scrollRight:Bool;
+	var accept:Bool;
+	var back:Bool;
 
 	public function new(x:Float, y:Float)
 	{
@@ -84,20 +93,48 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		upP = controls.UP_P;
+		downP = controls.DOWN_P;
+		accepted = controls.ACCEPT;
 
-		if (upP)
+		scrollUp = false;
+		scrollDown = false;
+		scrollRight = false;
+		accept = false;
+		back = false;
+
+		// The angle in degrees, between -180 and 180. 0 degrees points straight up.
+		for (swipe in FlxG.swipes)
+		{
+			if(swipe.distance >= 25){
+				if(swipe.angle >= -45 && swipe.angle <= 45)
+					scrollDown = true;
+
+				if(swipe.angle > -135 && swipe.angle < -45){
+					back = true;
+				}
+
+				if(swipe.angle > 45 && swipe.angle < 135){
+					scrollRight = true;
+				}
+
+				if((swipe.angle >= -180 && swipe.angle <= -135) || (swipe.angle >= 135 && swipe.angle <= 180))
+					scrollUp = true;
+			}
+			else
+				accept = true;
+		}
+
+		if (upP || scrollUp)
 		{
 			changeSelection(-1);
 		}
-		if (downP)
+		if (downP || scrollDown)
 		{
 			changeSelection(1);
 		}
 
-		if (accepted)
+		if (accepted || accept)
 		{
 			var daSelected:String = menuItems[curSelected];
 
@@ -106,7 +143,8 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
-					FlxG.resetState();
+					//FlxG.resetState();
+					LoadingState.loadAndSwitchState(new PlayState());
 				case "Exit to menu":
 					PlayState.loadRep = false;
 					FlxG.switchState(new MainMenuState());

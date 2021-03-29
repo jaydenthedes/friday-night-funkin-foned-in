@@ -29,6 +29,12 @@ class LoadReplayState extends MusicBeatState
 	private var grpControls:FlxTypedGroup<Alphabet>;
 	var versionShit:FlxText;
 	var poggerDetails:FlxText;
+	var scrollUp:Bool;
+	var scrollDown:Bool;
+	var scrollRight:Bool;
+	var accept:Bool;
+	var back:Bool;
+
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -133,15 +139,44 @@ class LoadReplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-			if (controls.BACK)
+		scrollUp = false;
+		scrollDown = false;
+		scrollRight = false;
+		accept = false;
+		back = false;
+
+		// The angle in degrees, between -180 and 180. 0 degrees points straight up.
+		for (swipe in FlxG.swipes)
+		{
+			if(swipe.distance >= 25){
+				if(swipe.angle >= -45 && swipe.angle <= 45)
+					scrollDown = true;
+
+				if(swipe.angle > -135 && swipe.angle < -45){
+					back = true;
+				}
+
+				if(swipe.angle > 45 && swipe.angle < 135){
+					scrollRight = true;
+				}
+
+				if((swipe.angle >= -180 && swipe.angle <= -135) || (swipe.angle >= 135 && swipe.angle <= 180))
+					scrollUp = true;
+			}
+			else
+				accept = true;
+		}
+		
+
+			if (controls.BACK || back)
 				FlxG.switchState(new OptionsMenu());
-			if (controls.UP_P)
+			if (controls.UP_P || scrollUp)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (controls.DOWN_P || scrollDown)
 				changeSelection(1);
 		
 
-			if (controls.ACCEPT && grpControls.members[curSelected].text != "No Replays...")
+			if ((controls.ACCEPT || accept) && grpControls.members[curSelected].text != "No Replays...")
 			{
                 trace('loading ' + actualNames[curSelected]);
                 PlayState.rep = Replay.LoadReplay(actualNames[curSelected]);
