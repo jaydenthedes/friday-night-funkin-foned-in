@@ -1983,15 +1983,18 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
+
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
 			score = 50;
+			totalNotesHit -= 1;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			totalNotesHit -= 1;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
@@ -2003,14 +2006,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.etternaMode)
 				etternaModeScore += Math.round(score / wife);
-
-		/* if (combo > 60)
-				daRating = 'sick';
-			else if (combo > 12)
-				daRating = 'good'
-			else if (combo > 4)
-				daRating = 'bad';
-		 */
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
@@ -2510,6 +2505,7 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 			misses++;
+			updateAccuracy();
 
 			songScore -= 10;
 
@@ -2541,8 +2537,6 @@ class PlayState extends MusicBeatState
 				noteMiss(3);
 			if (downP)
 				noteMiss(1);
-
-			//updateAccuracy();
 		}
 
 	function updateAccuracy()
@@ -2551,6 +2545,7 @@ class PlayState extends MusicBeatState
 				fc = false;
 			else
 				fc = true;
+
 			totalPlayed += 1;
 			accuracy = totalNotesHit / totalPlayed * 100;
 		}
@@ -2593,9 +2588,8 @@ class PlayState extends MusicBeatState
 					{
 						popUpScore(note.strumTime);
 						combo += 1;
-					}
-					else
 						totalNotesHit += 1;
+					}
 
 					if (note.noteData >= 0)
 						health += 0.023;
@@ -2628,9 +2622,7 @@ class PlayState extends MusicBeatState
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
-					//updateAccuracy();
 				}
-
 			}
 		
 
