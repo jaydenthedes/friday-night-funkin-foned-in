@@ -748,8 +748,6 @@ class PlayState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		// startCountdown();
-
 		generateSong(SONG.song);
 
 		// add(strumLine);
@@ -797,7 +795,7 @@ class PlayState extends MusicBeatState
 				songName.scrollFactor.set();
 				add(songName);
 				songName.cameras = [camHUD];
-			}
+		}
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		if (FlxG.save.data.downscroll)
@@ -1983,7 +1981,6 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
@@ -2204,13 +2201,14 @@ class PlayState extends MusicBeatState
 				persistentDraw = true;
 				paused = true;
 	
-				// 1 / 1000 chance for Gitaroo Man easter egg
-				//if (FlxG.random.bool(0.1))
-				//{
-					// gitaroo man easter egg
-				//	openSubState(new GitarooPause());
-				//}
-				//else
+				/*
+				if (FlxG.random.bool(0.1))
+				{
+					gitaroo man easter egg
+					openSubState(new GitarooPause());
+				}
+				else
+				*/
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 			}
 
@@ -2505,7 +2503,6 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 			misses++;
-			updateAccuracy();
 
 			songScore -= 10;
 
@@ -2524,6 +2521,7 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
+			updateAccuracy();
 		}
 	}
 
@@ -2547,7 +2545,7 @@ class PlayState extends MusicBeatState
 				fc = true;
 
 			totalPlayed += 1;
-			accuracy = totalNotesHit / totalPlayed * 100;
+			accuracy = Math.max(0,totalNotesHit / totalPlayed * 100);
 		}
 
 
@@ -2577,7 +2575,6 @@ class PlayState extends MusicBeatState
 			{
 				badNoteCheck();
 			}
-			updateAccuracy();
 		}
 
 		function goodNoteHit(note:Note):Void
@@ -2588,7 +2585,6 @@ class PlayState extends MusicBeatState
 					{
 						popUpScore(note.strumTime);
 						combo += 1;
-						totalNotesHit += 1;
 					}
 
 					if (note.noteData >= 0)
@@ -2622,6 +2618,8 @@ class PlayState extends MusicBeatState
 					note.kill();
 					notes.remove(note, true);
 					note.destroy();
+					totalNotesHit += 1;
+					updateAccuracy();
 				}
 			}
 		

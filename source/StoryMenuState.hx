@@ -154,7 +154,7 @@ class StoryMenuState extends MusicBeatState
 			grpWeekCharacters.add(weekCharacterThing);
 		}
 
-		// Top-left corner is (0, 0), Bottom Left is (FlxG.width, FlxG.height)
+		// Top-left corner is (0, 0), Bottom Right is (FlxG.width, FlxG.height)
 			// offset.set(-x, -y), where offset.set(0, 100) moves the sprite 100 pixels up
 			// offset.set(100, 0) moves sprite 100 pixels left
 		grpWeekCharacters.members[0].visible = false;
