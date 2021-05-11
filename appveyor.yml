@@ -9,7 +9,7 @@ clone_folder: /home/appveyor/site
 environment:
   HAXELIB_ROOT: /home/appveyor/haxelib
   HAXE_INSTALLDIR: /home/appveyor/haxe
-  SRC_REPO: 
+  SRC_REPO: https://github.com/imakegoodsuf2/friday-night-funkin-foned-in.git
   GITHUB_ACCESS_TOKEN:
     secure: /iJkmlKYPjeG0o1YoGSpn+NANPJMrCZ6dic5w/12wRiInp+y22kAAXsPkEwBJzHS
 
@@ -46,15 +46,15 @@ build_script:
   - cd /home/appveyor/site
   - git config --global credential.helper store
   - printf "https://$GITHUB_ACCESS_TOKEN:x-oauth-basic@github.com\n" > $HOME/.git-credentials
-  - git config --global user.email "daniel@frosty.gg"
-  - git config --global user.name "daniel11420"
+  - git config --global user.email "sm64fan111@gmail.com"
+  - git config --global user.name "imakegoodsuf2"
   - cd /home/appveyor/src
-  - haxelib run lime build html5
+  - haxelib run lime build html5-debug
   - cd /home/appveyor/site
-  - git rm -rf nightly/
+  - git rm -rf master/
   - cp -r /home/appveyor/src/export/release/html5/bin /home/appveyor/site/bin
-  - mv /home/appveyor/site/bin /home/appveyor/site/nightly
+  - mv /home/appveyor/site/bin /home/appveyor/site/master
   - git add --all
-  - git commit -m "nightly build through appveyor"
+  - git commit -m "build master"
   - git push
 deploy: off
